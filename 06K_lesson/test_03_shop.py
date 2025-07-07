@@ -1,33 +1,55 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-# 1. Инициализация драйвера (используем Edge)
-driver = webdriver.Edge()  # Для Safari: webdriver.Safari()
+service = Service('geckodriver.exe')  # Укажите путь к geckodriver
+driver = webdriver.Firefox(service=service)
 
 try:
-    # 2. Переход на страницу
-    driver.get("https://bonigarcia.dev/selenium-webdriver-java/loading-images.html")
+
+    driver.get("https://www.saucedemo.com/")
     
-    # 3. Ожидание загрузки всех изображений (исчезновение спиннера)
-    WebDriverWait(driver, 10).until(
-        EC.invisibility_of_element_located((By.ID, "spinner"))
+    # 3. Авторизация
+    driver.find_element(By.ID, "user-name").send_keys("standard_user")
+    driver.find_element(By.ID, "password").send_keys("secret_sauce")
+    driver.find_element(By.ID, "login-button").click()
+    
+
+    items_to_add = [
+        "Sauce Labs Backpack",
+        "Sauce Labs Bolt T-Shirt",
+        "Sauce Labs Onesie"
+    ]
+    
+    for item_name in items_to_add:
+        item_xpath = f"//div[text()='{item_name}']/ancestor::div[@class='inventory_item']//button"
+        driver.find_element(By.XPATH, item_xpath).click()
+    
+
+    driver.find_element(By.CLASS_NAME, "shopping_cart_link").click()
+    
+
+    driver.find_element(By.ID, "checkout").click()
+    
+    
+    driver.find_element(By.ID, "first-name").send_keys("Иван")
+    driver.find_element(By.ID, "last-name").send_keys("Петров")
+    driver.find_element(By.ID, "postal-code").send_keys("123456")
+    driver.find_element(By.ID, "continue").click()
+    
+   
+    total_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, "summary_total_label"))
     )
+    total_text = total_element.text
+    total_amount = total_text.split()[-1]
     
-    # 4. Получение всех изображений
-    images = driver.find_elements(By.CSS_SELECTOR, "#image-container img")
-    
-    # 5. Проверка, что изображений достаточно
-    if len(images) >= 3:
-        # 6. Получение атрибута src у 3-й картинки (индекс 2)
-        third_image_src = images[2].get_attribute("src")
-        
-        # 7. Вывод результата в консоль
-        print("URL третьей картинки:", third_image_src)
-    else:
-        print("Ошибка: На странице меньше 3 изображений")
+   
+    assert total_amount == "$58.29", f"Ожидалась сумма $58.29, получено {total_amount}"
+    print(f"Тест пройден успешно! Итоговая сумма: {total_amount}")
 
 finally:
-    # 8. Закрытие браузера
+
     driver.quit()

@@ -1,32 +1,33 @@
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
-# 1. Инициализация драйвера (используем Edge)
-driver = webdriver.Edge()  # Для Safari: webdriver.Safari()
+driver = webdriver.Chrome()
 
 try:
-    # 2. Переход на страницу
-    driver.get("http://uitestingplayground.com/textinput")
+    driver.get("https://bonigarcia.dev/selenium-webdriver-java/slow-calculator.html")
     
-    # 3. Ввод текста "SkyPro" в поле
-    input_field = driver.find_element(By.ID, "newButtonName")
-    input_field.clear()  # Очищаем поле на случай, если там есть текст
-    input_field.send_keys("SkyPro")
+    delay_input = driver.find_element(By.CSS_SELECTOR, "#delay")
+    delay_input.clear()
+    delay_input.send_keys("45")
     
-    # 4. Нажатие на синюю кнопку
-    blue_button = driver.find_element(By.ID, "updatingButton")
-    blue_button.click()
+    driver.find_element(By.XPATH, "//span[text()='7']").click()
+    driver.find_element(By.XPATH, "//span[text()='+']").click()
+    driver.find_element(By.XPATH, "//span[text()='8']").click()
+    driver.find_element(By.XPATH, "//span[text()='=']").click()
     
-    # 5. Получение текста кнопки
-    button_text = blue_button.text
+    wait = WebDriverWait(driver, 50)  
+    result = wait.until(
+        EC.text_to_be_present_in_element((By.CSS_SELECTOR, ".screen"), "15")
+    )
     
-    # 6. Вывод результата в консоль
-    print("Текст кнопки:", button_text)  # Должно вывести "SkyPro"
+    actual_result = driver.find_element(By.CSS_SELECTOR, ".screen").text
     
-    # Проверка с помощью assert (опционально)
-    assert button_text == "SkyPro", f"Ожидался текст 'SkyPro', получено '{button_text}'"
+
+    assert actual_result == "15", f"Ожидался результат 15, получено {actual_result}"
+    print("Тест пройден успешно! Результат:", actual_result)
 
 finally:
-    # 7. Закрытие браузера
     driver.quit()
