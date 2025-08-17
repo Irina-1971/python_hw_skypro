@@ -23,15 +23,17 @@ def test_create_company():
 
 
 def test_get_negativ():
+    responce = requests.get(BASE_URL + '/projects/' + '1', headers=headers)
+   
+    assert responce.status_code == 404
 
-responce = requests.get(base_url + '/projects/' + '1', headers=headers)
-assert responce.status_code == 404
 
 
 def test_edit_company():
     payload={
-"title": "home1"
+    "title": "home1"
 }
+
     
     response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
     project_id = response.json()["id"]
