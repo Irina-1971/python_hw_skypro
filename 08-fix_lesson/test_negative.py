@@ -3,7 +3,7 @@ import requests
 
 BASE_URL = "https://yougile.com/api-v2"
 
-Key = ""
+Key = "nba19PoXxBYD5fot+VHKL53qI8ak8N03-W-ymVVgg1obGxXHrP-zMHPtF4Oi0rNU"
 headers = {
 "Authorization": Key,
 "Content-Type": "application/json"
@@ -11,11 +11,8 @@ headers = {
 
 
 def test_create_company():
-    payload={
-"title": ""
-}
-    
-    response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
+    payload = {"title": ""}
+    response = requests.post(BASE_URL+'/projects/', headers=headers, json=payload)
 
     assert response.status_code == 400
 
@@ -30,20 +27,16 @@ def test_get_negativ():
 
 
 def test_edit_company():
-    payload={
-    "title": "home1"
-}
-
+    payload = {"title": "home1"}
     
-    response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
+    response = requests.post(BASE_URL+'/projects/', headers=headers, json=payload)
     project_id = response.json()["id"]
-    payload={
-        "title": "home2"
-    }
+    payload = {"title": "home2"}
 
-    response = requests.put(BASE_URL+'/projects'+project_id, headers=headers, json=payload)
+    response = requests.put(BASE_URL+'/projects/'+project_id, headers=headers, json=payload)
 
     assert response.status_code == 400
-    response = requests.get(BASE_URL+'/projects'+project_id +1, headers=headers)
+    response = requests.get(BASE_URL+'/projects/'+project_id +1, headers=headers)
     data = response.json()
     assert data["title"] == "home2"
+

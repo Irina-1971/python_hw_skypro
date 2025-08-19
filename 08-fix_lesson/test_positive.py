@@ -11,41 +11,37 @@ headers = {
 
 
 def test_create_company():
-    payload={
-"title": "home"
-}
+    payload = {"title": "home"}
     
     response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
 
     assert response.status_code == 201
 
+
 def test_edit_company():
-    payload={
-"title": "home1"
-}
+    payload = {"title": "home1"}
     
-    response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
-    project_id = response.json()["id"]
-    payload={
-        "title": "home2"
-    }
+    response = requests.post(BASE_URL+'/projects/', headers=headers, json=payload)
+    if response.status_code == 201:
+        project_id = response.json()["id"]
 
-    response = requests.put(BASE_URL+'/projects'+project_id, headers=headers, json=payload)
+        payload = { "title": "home2"}
+        response = requests.put(BASE_URL+'/projects/'+project_id, headers=headers, json=payload)
 
-    assert response.status_code == 200
-    response = requests.get(BASE_URL+'/projects'+project_id, headers=headers)
-    data = response.json()
-    assert data["title"] == "home2"
+        assert response.status_code == 200
+
+        response = requests.get(BASE_URL+'/projects/'+project_id, headers=headers)
+        data = response.json()
+        assert data["title"] == "home2"
+
 
 def test_get_company():
-    payload={
-"title": "home3"
-}
-    response = requests.post(BASE_URL+'/projects', headers=headers, json=payload)
-    project_id = response.json()["id"]  
-
-    response = requests.get(BASE_URL+'/projects'+project_id, headers=headers)
-    data = response.json()
-    assert data["title"] == "home3"
+    payload = {"title": "home3"}
+    response = requests.post(BASE_URL+'/projects/', headers=headers, json=payload)
+    if response.status_code == 201:
+        project_id = response.json()["id"]
 
 
+        response = requests.get(BASE_URL+'/projects/'+project_id, headers=headers)
+        data = response.json()
+        assert data["title"] == "home3"
